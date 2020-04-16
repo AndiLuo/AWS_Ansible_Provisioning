@@ -1,0 +1,6 @@
+---
+dependencies:
+  - role: mongodb
+  - role: nginx
+  - role: nodejs
+...

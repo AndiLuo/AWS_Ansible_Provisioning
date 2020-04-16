@@ -1,0 +1,51 @@
+---
+- name: create VPC
+  ec2_vpc_net: 
+    cidr_block: "{{vpc_net_cidr}}"
+    name: "{{vpc_prefix}}_VPC"
+    region: "{{aws_region}}"
+    state: present
+    multi_ok: no
+  register: vpc_data
+
+- name: create subnet
+  ec2_vpc_subnet:
+    az: "{{aws_az}}"
+    region: "{{aws_region}}"
+    state: present
+    cidr: "{{vpc_subnet_cidr}}"
+    vpc_id: "{{vpc_data.vpc.id}}"
+    tags: 
+      Name: "{{vpc_prefix}}_subnet"
+  register: subnet_data
+
+- name: create internet gateway
+  ec2_vpc_igw:
+    vpc_id: "{{ vpc_data.vpc.id }}"
+    region: "{{aws_region}}"
+    state: present
+    tags: 
+      Name: "{{vpc_prefix}}_igw"
+  register: igw
+
+- name: create routing table
+  ec2_vpc_route_table:
+    vpc_id: "{{ vpc_data.vpc.id }}"
+    region: "{{aws_region}}"
+    tags:
+      Name: "{{vpc_prefix}}_rbtl"
+    subnets:
+      - "{{subnet_data.subnet.id}}"
+    routes:
+      - dest: "0.0.0.0/0"
+        gateway_id: "{{igw.gateway_id}}"
+  register: routing_table
+  
+- debug:
+    msg: "{{ subnet_data }}"
+- debug:
+    msg: "{{ igw }}"
+- debug:
+    msg: "{{routing_table}}"
+    
+...

@@ -1,0 +1,7 @@
+---
+    todo_user: todoapp
+    todoapp_path: /home/todoapp/app
+    mongo_hostname: localhost
+    mongodb_instance: acit4640
+    todoapp_port: 8080
+...

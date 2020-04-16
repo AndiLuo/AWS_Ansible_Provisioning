@@ -1,0 +1,25 @@
+---
+    - name: Install packages
+      become: yes
+      package:
+        name: [nginx]
+        state: present
+
+    - name: transfer nginx.conf
+      become: yes
+      template:
+        src:  nginx.conf.j2 
+        dest:  /etc/nginx/nginx.conf
+        mode: 0644
+      notify: restart nginx
+        # owner: "{{todo_user}}"
+        # group: "{{todo_user}}"
+      
+
+    - name: Make sure nginx service is running
+      become: yes
+      systemd:
+        state: started
+        enabled: yes
+        name: nginx
+...

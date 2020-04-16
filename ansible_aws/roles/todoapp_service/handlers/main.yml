@@ -1,0 +1,19 @@
+---
+
+    - name: restart todoapp service
+      become: yes
+      systemd:
+        state: restarted
+        name: todoapp
+
+
+    - name: register app if not already registered
+      become: yes
+      systemd:
+        # state: restarted
+        enabled: yes
+        daemon_reload: yes
+        name: todoapp
+...
+
+

@@ -1,0 +1,27 @@
+---
+- name: get public IP of created ec2 instance
+  ipify_facts:
+  register: ip_info
+
+# - name: get nginx status
+#   nginx_status_facts:
+#     url: "{{ip_info.ansible_facts.ipify_public_ip}}"
+#   register: nginx_status
+
+- name: get nginx service status 
+  shell: systemctl status nginx
+  register: nginx_status
+
+- name: get todoapp service status
+  shell: systemctl status todoapp
+  register: todoapp_status
+
+- debug:
+    msg: "{{ip_info}}"
+
+- debug:
+    msg: "{{nginx_status}}"
+
+- debug:
+    msg: "{{todoapp_status}}"
+...

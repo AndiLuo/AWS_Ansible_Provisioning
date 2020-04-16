@@ -1,0 +1,72 @@
+---
+
+    - name: Install packages
+      become: yes
+      package:
+        name: [git, wget]
+        state: present
+
+    - name: Create user todoapp
+      become: yes
+      user:
+        name: "{{todo_user}}"
+        state: present
+        home: /home/{{todo_user}}
+
+    - name: Recursively change ownership of directory
+      become: yes
+      file:
+        path: /home/{{todo_user}}
+        state: directory
+        mode: 0755
+
+    - name : Clone app into /home/todoapp/app
+      git:
+        repo: https://github.com/Ram-the-coder/MERN-Stack-Todo-List-App
+        dest: "{{todoapp_path}}"
+        force: yes
+      become: yes
+      become_user: "{{todo_user}}"
+    
+    - name: Install packages based on package.json.
+      npm:
+        path: "{{todoapp_path}}"
+      become: yes
+      become_user: "{{todo_user}}"
+
+    - name: Template out todoapp.service
+      become: yes
+      template:
+        src:  todoapp.service.j2
+        dest:  /etc/systemd/system/todoapp.service
+        mode: 0644
+        owner: "{{todo_user}}"
+        group: "{{todo_user}}"
+      notify: restart todoapp service
+
+    - name: Template out database.js
+      become: yes
+      template:
+        src:  database.j2
+        dest:  "{{todoapp_path}}/config/database.js"
+        mode: 0664
+        owner: "{{todo_user}}"
+        group: "{{todo_user}}"
+
+    - name: Change file ownership, group and permissions
+      become: yes
+      file:
+        path: "{{todoapp_path}}/server.js"
+        owner: "{{todo_user}}"
+        group: "{{todo_user}}"
+        mode: 0755
+
+    - name: Make sure todoapp service is running
+      become: yes
+      systemd:
+        state: started
+        # enabled: yes
+        # daemon_reload: yes
+        name: todoapp
+      notify: register app if not already registered
+...

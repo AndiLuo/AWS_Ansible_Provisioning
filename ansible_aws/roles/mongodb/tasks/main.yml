@@ -1,0 +1,14 @@
+---
+
+    - name: Gather the package facts
+      package_facts:
+        manager: auto
+
+    - name: Install packages
+      become: yes
+      package:
+        name: [mongodb-server, mongodb]
+        state: present
+      notify: Make sure mongod service is started
+
+...

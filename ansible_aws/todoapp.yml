@@ -1,0 +1,35 @@
+---
+
+- hosts: localhost
+  gather_facts: false
+  connection: local
+  vars:
+    my_ip : 96.49.16.145/32
+  tasks:
+    - import_role:
+        name: aws
+      tags:
+        - provision
+    - import_role:
+        name: aws_cleanup
+      tags: [cleanup, never]
+
+- hosts: aws_ec2
+  gather_facts: false
+  remote_user: centos
+  connection: ssh
+  tasks: 
+    - import_role:
+        name: base_system
+      tags:
+        - deployment
+    - import_role:
+        name: todoapp
+      tags:
+        - deployment
+    - import_role:
+        name: info
+      tags:
+        - info
+  tags: deployment
+ 

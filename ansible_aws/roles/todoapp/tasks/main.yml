@@ -1,0 +1,9 @@
+---
+
+  - name: Include todoapp_service role to install and setup the todoapp service
+    include_role:
+      name: todoapp_service
+    
+
+...
+

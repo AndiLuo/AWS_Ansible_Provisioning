@@ -1,0 +1,24 @@
+---
+    
+    - name: install epel-release
+      become: yes
+      package: { name: epel-release, state: present}
+    - name: Disable SELinux
+      become: yes
+      selinux:
+        state: disabled
+
+...
+
+
+# - name: Include mongodb role for base configuration
+# include_role:
+#   name: mongodb
+
+# - name: Include nginx role for base configuration
+# include_role:
+#   name: nginx
+
+# - name: Include nodejs role for base configuration
+# include_role:
+#   name: nodejs

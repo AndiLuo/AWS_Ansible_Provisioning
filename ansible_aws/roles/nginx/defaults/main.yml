@@ -1,0 +1,5 @@
+---
+    todo_user: todoapp
+    todoapp_path: /home/todoapp/app
+    todoapp_port: 8080
+...

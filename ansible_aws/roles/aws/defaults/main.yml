@@ -1,0 +1,9 @@
+---
+  vpc_net_cidr: 10.56.0.0/16
+  vpc_subnet_cidr: 10.56.10.0/24
+  ec2_instance_name: ACIT4640_APP
+  vpc_prefix: ACIT4640
+  aws_az: us-west-2a
+  aws_region: us-west-2
+  ami_id: ami-01ed306a12b7d1c96
+...

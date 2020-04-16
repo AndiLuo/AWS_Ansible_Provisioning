@@ -1,0 +1,49 @@
+---
+  - name: Make sure mongod service is started
+    become: yes
+    systemd:
+      state: started
+      name: mongod
+    register: mongodb_service_started
+    notify: "load data if not present"
+
+  - name: Fetch file that requires authentication
+    get_url:
+      url: https://acit4640.y.vu/docs/module06/resources/mongodb_ACIT4640.tgz
+      dest: ~/mongodb_ACIT4640.tgz
+      url_username: BCIT
+      url_password: w1nt3r2020
+    when:
+      - mongodb_service_started is defined
+    listen: "load data if not present"
+
+  - name: Unarchive a file that is already on the remote machine
+    unarchive:
+      src: ~/mongodb_ACIT4640.tgz
+      dest: ~/
+      remote_src: yes
+    when:
+      - mongodb_service_started is defined
+    listen: "load data if not present"
+
+  - name: Run mongorestore command
+    command: mongorestore -d acit4640 ACIT4640/
+    when:
+      - mongodb_service_started is defined
+    listen: "load data if not present"
+    notify: restart mongod
+
+  - name: restart mongod 
+    become: yes
+    systemd: 
+      state: restarted
+      daemon_reload: yes
+      name: mongod 
+
+  - name: Make sure the mongod service is enabled
+    become: yes
+    systemd:
+      enabled: yes
+      name: mongod
+
+...
