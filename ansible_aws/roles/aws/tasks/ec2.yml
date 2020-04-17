@@ -15,6 +15,10 @@
         ports:
         - 8080
         cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        ports:
+        - 4000
+        cidr_ip: 0.0.0.0/0
     tags: 
       Name: "{{vpc_prefix}}_SecGroup"
 
