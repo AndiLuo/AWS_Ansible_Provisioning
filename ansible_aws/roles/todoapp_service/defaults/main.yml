@@ -1,7 +1,10 @@
 ---
     todo_user: todoapp
+    # todoapp_path: /home/todoapp/app
     todoapp_path: /home/todoapp/app
-    mongo_hostname: localhost
-    mongodb_instance: acit4640
+    todoapp_path_back: /home/todoapp/app/backend
+    todoapp_path_front: /home/todoapp/app/client
+    mongo_hostname: localhost:27017
+    mongodb_instance: todos
     todoapp_port: 8080
 ...

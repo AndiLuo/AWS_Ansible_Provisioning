@@ -27,9 +27,9 @@
         name: todoapp
       tags:
         - deployment
-    - import_role:
-        name: info
-      tags:
-        - info
+    # - import_role:
+    #     name: info
+    #   tags:
+    #     - info
   tags: deployment
  

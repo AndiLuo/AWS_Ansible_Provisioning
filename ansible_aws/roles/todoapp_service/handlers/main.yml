@@ -1,19 +1,37 @@
 ---
-
-    - name: restart todoapp service
+  
+    - name: restart back
+      listen: restart todoapp service
       become: yes
       systemd:
         state: restarted
-        name: todoapp
+        name: todoappBack
+    - name: restart front
+      listen: restart todoapp service
+      become: yes
+      systemd:
+        state: restarted
+        name: todoappFront
+        
 
 
     - name: register app if not already registered
+      listen: register app 
       become: yes
       systemd:
+        name: todoappFront
+        enabled: yes
+        daemon_reload: yes
+
+    - name: register app if not already registered
+      listen: register app
+      become: yes
+      systemd:
+        name: todoappBack
         # state: restarted
         enabled: yes
         daemon_reload: yes
-        name: todoapp
+
 ...
 
 

@@ -3,10 +3,34 @@
     - name: install epel-release
       become: yes
       package: { name: epel-release, state: present}
+
     - name: Disable SELinux
       become: yes
       selinux:
         state: disabled
+
+    - name: check if swap file exists
+      stat: 
+        path: /swapfile
+      register: swap_file
+
+    - name: make me swap daddy
+      become: yes
+      command: "{{item}}"
+      with_items:
+        - dd if=/dev/zero of=/swapfile bs=1MiB count=4096       
+        - chmod 600 /swapfile             
+        - mkswap /swapfile             
+        - swapon /swapfile 
+      when: swap_file.stat.exists == false
+
+    - name: add new swap to /etc/swap file
+      become: yes
+      lineinfile: 
+        path: /etc/fstab
+        line: /swapfile swap swap defaults 0 0 
+      when: swap_file.stat.exists == false
+
 
 ...
 

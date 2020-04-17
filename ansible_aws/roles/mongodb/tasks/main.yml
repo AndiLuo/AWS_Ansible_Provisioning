@@ -4,6 +4,7 @@
       package_facts:
         manager: auto
 
+
     - name: Install packages
       become: yes
       package:

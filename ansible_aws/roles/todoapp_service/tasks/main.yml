@@ -13,32 +13,44 @@
         state: present
         home: /home/{{todo_user}}
 
-    - name: Recursively change ownership of directory
-      become: yes
-      file:
-        path: /home/{{todo_user}}
-        state: directory
-        mode: 0755
-
     - name : Clone app into /home/todoapp/app
       git:
-        repo: https://github.com/Ram-the-coder/MERN-Stack-Todo-List-App
+        repo: https://github.com/AndiLuo/MERN-Stack-Todo-List-App.git
         dest: "{{todoapp_path}}"
         force: yes
       become: yes
       become_user: "{{todo_user}}"
     
-    - name: Install packages based on package.json.
+    - name: Install packages for back end based on package.json.
       npm:
-        path: "{{todoapp_path}}"
+        path: "{{todoapp_path_back}}"
       become: yes
       become_user: "{{todo_user}}"
+      ignore_errors: yes
+    
+    - name: Install packages for the front end based on package.json.
+      npm:
+        path: "{{todoapp_path_front}}"
+      become: yes
+      become_user: "{{todo_user}}"  
+      ignore_errors: yes
 
-    - name: Template out todoapp.service
+    - name: Template out todoapp.service frontend
       become: yes
       template:
-        src:  todoapp.service.j2
-        dest:  /etc/systemd/system/todoapp.service
+        src:  todoappFront.service.j2
+        dest:  /etc/systemd/system/todoappFront.service
+        mode: 0644
+        owner: "{{todo_user}}"
+        group: "{{todo_user}}"
+      notify: restart todoapp service 
+
+    
+    - name: Template out todoapp.service backend
+      become: yes
+      template:
+        src:  todoappBack.service.j2
+        dest:  /etc/systemd/system/todoappBack.service
         mode: 0644
         owner: "{{todo_user}}"
         group: "{{todo_user}}"
@@ -48,25 +60,26 @@
       become: yes
       template:
         src:  database.j2
-        dest:  "{{todoapp_path}}/config/database.js"
+        dest:  "{{todoapp_path_back}}/database.js"
         mode: 0664
         owner: "{{todo_user}}"
         group: "{{todo_user}}"
 
-    - name: Change file ownership, group and permissions
-      become: yes
-      file:
-        path: "{{todoapp_path}}/server.js"
-        owner: "{{todo_user}}"
-        group: "{{todo_user}}"
-        mode: 0755
-
-    - name: Make sure todoapp service is running
+    - name: Make sure todoapp backend service is running
       become: yes
       systemd:
         state: started
         # enabled: yes
         # daemon_reload: yes
-        name: todoapp
-      notify: register app if not already registered
+        name: todoappFront
+      notify: register app
+
+    - name: Make sure todoapp frontend service is running
+      become: yes
+      systemd:
+        state: started
+        # enabled: yes
+        # daemon_reload: yes
+        name: todoappBack
+      notify: register app
 ...

@@ -13,28 +13,28 @@
         cidr_ip: "{{my_ip}}"
       - proto: tcp
         ports:
-        - 80
+        - 8080
         cidr_ip: 0.0.0.0/0
     tags: 
       Name: "{{vpc_prefix}}_SecGroup"
 
 - name: create EC2 instance
-  ec2:
-    key_name: ACIT4640
-    exact_count: 1
-    count_tag:
-      Name: "{{ ec2_instance_name }}"
-    group: "{{vpc_prefix}}_SecGroup"
-    instance_type: t2.micro
-    image: "{{ami_id}}"
-    region: "{{aws_region}}"
+  ec2_instance:
     wait: yes
+    wait_timeout: 500
+    key_name: ACIT4640
+    name: "{{ ec2_instance_name }}"
+    security_group: "{{vpc_prefix}}_SecGroup"
+    instance_type: t2.medium
+    image_id: "{{ami_id}}"
+    region: "{{aws_region}}"
     vpc_subnet_id: "{{subnet_data.subnet.id}}"
     volumes:
       - device_name: /dev/sda1
-        volume_size: 8
-        delete_on_termination: true
-    instance_tags:
+        ebs:
+          volume_size: 15
+          delete_on_termination: true
+    tags:
       Name: "{{ec2_instance_name}}"
   register: ec2
 - debug:
@@ -44,7 +44,7 @@
   ec2_eip:
     region: "{{aws_region}}"
     in_vpc: yes
-    device_id: "{{ec2.tagged_instances[0].id}}"
+    device_id: "{{ec2.instances[0].instance_id}}"
     state: present
   register: eip_data
 - debug:
